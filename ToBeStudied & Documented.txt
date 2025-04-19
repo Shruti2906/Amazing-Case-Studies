@@ -1,0 +1,5 @@
+auth Token in angular.
+this counter & concurrent execution of node
+transactions classic problems.
+	-insert & read those inserted records in same transaction
+	-multiple services involved in transaction, how to rollback one if another service fails. sagga pattern
