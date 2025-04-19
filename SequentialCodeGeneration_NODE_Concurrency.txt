@@ -1,0 +1,45 @@
+Document: Sequential Code Generation & Concurrency
+
+Context:
+In our system, users are required to fill out a survey before entering. Once completed, we generate a sequential unique code for each user based on a counter stored in the database.
+---------------------------
+
+Issue Identified: If multiple users complete the survey at nearly the same time, and the logic simply:
+
+Fetches the current counter.
+
+Increments it.
+
+Updates it in DB.
+
+Then both users may read the same counter before any of them updates it.
+➡️ This results in duplicate codes being assigned – a race condition.
+-------------------------
+
+Example Flow:
+
+Time	UserA	 	UserB
+T1	Reads 100
+T2			Reads 100
+T3	Write 101	
+T4			write 101
+➡️ Both users get the same value. 
+---------------------
+
+Root Cause: Lack of synchronization between read and write operations in a multi-request concurrent environment.
+
+---------------------
+
+Recommended Solutions:
+
+Use transactions + locking (e.g. SQL FOR UPDATE)
+
+Atomic operations (findOneAndUpdate in MongoDB, INCR in Redis)
+
+Avoid separate read + write logic. Use single atomic update if possible.
+
+--------------------
+
+Conclusion: Always assume concurrent requests in real-world systems. To prevent race conditions and ensure data integrity, prefer atomic operations or transactions with locks.
+
+-----------------------------------------------------------------
